@@ -1,0 +1,155 @@
+//
+//  XYZMainViewController.m
+//  BLESensor
+//
+//  Created by Vince Allen on 5/12/14.
+//  Copyright (c) 2014 Vince Allen. All rights reserved.
+//
+
+#import "XYZMainViewController.h"
+
+@interface XYZMainViewController ()
+
+@end
+
+@implementation XYZMainViewController
+
+@synthesize ble;
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    ble = [[BLE alloc] init];
+    [ble controlSetup];
+    ble.delegate = self;
+    
+    [btnTest setEnabled:false];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - BLE delegate
+
+NSTimer *rssiTimer;
+
+- (void)bleDidDisconnect
+{
+    NSLog(@"->Disconnected");
+    
+    [btnConnect setTitle:@"Connect" forState:UIControlStateNormal];
+    [indConnecting stopAnimating];
+    
+    lblRSSI.text = @"---";
+    //   lblAnalogIn.text = @"----";
+    
+    [rssiTimer invalidate];
+}
+
+// When RSSI is changed, this will be called
+-(void) bleDidUpdateRSSI:(NSNumber *) rssi
+{
+    lblRSSI.text = rssi.stringValue;
+}
+
+-(void) readRSSITimer:(NSTimer *)timer
+{
+    [ble readRSSI];
+}
+
+// When disconnected, this will be called
+-(void) bleDidConnect
+{
+    NSLog(@"->Connected");
+    
+    [indConnecting stopAnimating];
+    
+    // send reset
+    UInt8 buf[] = {0x04, 0x00, 0x00};
+    NSData *data = [[NSData alloc] initWithBytes:buf length:3];
+    [ble write:data];
+    
+    // Schedule to read RSSI every 1 sec.
+    rssiTimer = [NSTimer scheduledTimerWithTimeInterval:(float)1.0 target:self selector:@selector(readRSSITimer:) userInfo:nil repeats:YES];
+}
+
+// When data is comming, this will be called
+-(void) bleDidReceiveData:(unsigned char *)data length:(int)length
+{
+    NSLog(@"Length: %d", length);
+    
+    // parse data, all commands are in 3-byte
+    for (int i = 0; i < length; i+=3)
+    {
+        NSLog(@"0x%02X, 0x%02X, 0x%02X", data[i], data[i+1], data[i+2]);
+        
+        if (data[i] == 0x0A)
+        {
+                
+        }
+        else if (data[i] == 0x0B)
+        {
+
+        }
+    }
+}
+
+#pragma mark - Actions
+
+// Connect button will call to this
+- (IBAction)btnScanForPeripherals:(id)sender
+{
+    if (ble.activePeripheral)
+        if(ble.activePeripheral.state == CBPeripheralStateConnected)
+        {
+            [[ble CM] cancelPeripheralConnection:[ble activePeripheral]];
+            [btnConnect setTitle:@"Connect" forState:UIControlStateNormal];
+            return;
+        }
+    
+    if (ble.peripherals)
+        ble.peripherals = nil;
+        
+        [btnConnect setEnabled:false];
+    [ble findBLEPeripherals:2];
+    
+    [NSTimer scheduledTimerWithTimeInterval:(float)2.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
+    
+    [indConnecting startAnimating];
+}
+
+-(void) connectionTimer:(NSTimer *)timer
+{
+    [btnTest setEnabled:true];
+    
+    [btnConnect setEnabled:true];
+    [btnConnect setTitle:@"Disconnect" forState:UIControlStateNormal];
+    
+    if (ble.peripherals.count > 0)
+    {
+        [ble connectPeripheral:[ble.peripherals objectAtIndex:0]];
+    }
+    else
+    {
+        [btnConnect setTitle:@"Connect" forState:UIControlStateNormal];
+        [indConnecting stopAnimating];
+    }
+}
+
+- (IBAction)btnTest:(id)sender
+{
+    NSLog(@"sending...");
+    UInt8 buf[3] = {0x01, 0x00, 0x00};
+    
+    buf[1] = 0x01;
+    
+    NSData *data = [[NSData alloc] initWithBytes:buf length:3];
+    [ble write:data];
+}
+
+@end
+
