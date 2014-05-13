@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreMotion/CMMotionManager.h>
 #import "BLE.h"
 
 @interface XYZMainViewController : UIViewController <BLEDelegate>

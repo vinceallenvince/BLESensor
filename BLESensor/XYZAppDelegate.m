@@ -8,7 +8,22 @@
 
 #import "XYZAppDelegate.h"
 
+@interface XYZAppDelegate ()
+{
+    CMMotionManager *motionmanager;
+}
+@end
+
 @implementation XYZAppDelegate
+
+- (CMMotionManager *)sharedManager
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        motionmanager = [[CMMotionManager alloc] init];
+    });
+    return motionmanager;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

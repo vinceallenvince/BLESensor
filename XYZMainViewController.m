@@ -7,6 +7,9 @@
 //
 
 #import "XYZMainViewController.h"
+#import "XYZAppDelegate.h"
+
+static const NSTimeInterval deviceMotionMin = 0.01;
 
 @interface XYZMainViewController ()
 
@@ -25,6 +28,8 @@
     ble.delegate = self;
     
     [btnTest setEnabled:false];
+    
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -75,6 +80,8 @@ NSTimer *rssiTimer;
     
     // Schedule to read RSSI every 1 sec.
     rssiTimer = [NSTimer scheduledTimerWithTimeInterval:(float)1.0 target:self selector:@selector(readRSSITimer:) userInfo:nil repeats:YES];
+    
+    [self startSensorUpdates];
 }
 
 // When data is comming, this will be called
@@ -158,6 +165,36 @@ NSTimer *rssiTimer;
     
     NSData *data = [[NSData alloc] initWithBytes:buf length:6];
     [ble write:data];
+    
+}
+
+- (void)startSensorUpdates
+{
+    
+    NSTimeInterval delta = 0.005;
+    NSTimeInterval updateInterval = deviceMotionMin + delta * 10; // * some offset
+    
+    CMMotionManager *mManager = [(XYZAppDelegate *)[[UIApplication sharedApplication] delegate] sharedManager];
+    
+    if ([mManager isDeviceMotionAvailable] == YES) {
+        [mManager setDeviceMotionUpdateInterval:updateInterval];
+        [mManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) {
+            
+            
+            
+            // gravity
+            NSNumber *myGravXNumber = [NSNumber numberWithDouble:deviceMotion.gravity.x];
+            //NSNumber *myGravYNumber = [NSNumber numberWithDouble:deviceMotion.gravity.y];
+            //NSNumber *myGravZNumber = [NSNumber numberWithDouble:deviceMotion.gravity.z];
+
+            UInt8 buf[6] = {0x26, 0x2d, 0, 0x2e, 9, 2}; // begin all buffers w '&' (0x26)
+            
+            
+            NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+            [ble write:data];
+            
+        }];
+    }
     
 }
 

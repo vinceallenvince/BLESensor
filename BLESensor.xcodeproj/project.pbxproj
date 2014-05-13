@@ -22,6 +22,7 @@
 		616C125519214379002FF104 /* XYZMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 616C125419214379002FF104 /* XYZMainViewController.m */; };
 		616C125F19214A13002FF104 /* BLE.m in Sources */ = {isa = PBXBuildFile; fileRef = 616C125D19214A13002FF104 /* BLE.m */; };
 		616C126119214B17002FF104 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 616C126019214B17002FF104 /* Main.storyboard */; };
+		616C12631922825C002FF104 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 616C12621922825C002FF104 /* CoreMotion.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		616C125D19214A13002FF104 /* BLE.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLE.m; sourceTree = "<group>"; };
 		616C125E19214A13002FF104 /* BLEDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEDefines.h; sourceTree = "<group>"; };
 		616C126019214B17002FF104 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		616C12621922825C002FF104 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				616C12631922825C002FF104 /* CoreMotion.framework in Frameworks */,
 				616C12271921426B002FF104 /* CoreGraphics.framework in Frameworks */,
 				616C12291921426B002FF104 /* UIKit.framework in Frameworks */,
 				616C12251921426B002FF104 /* Foundation.framework in Frameworks */,
@@ -108,6 +111,7 @@
 		616C12231921426B002FF104 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				616C12621922825C002FF104 /* CoreMotion.framework */,
 				616C12241921426B002FF104 /* Foundation.framework */,
 				616C12261921426B002FF104 /* CoreGraphics.framework */,
 				616C12281921426B002FF104 /* UIKit.framework */,
@@ -464,6 +468,7 @@
 				616C124F1921426B002FF104 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		616C12501921426B002FF104 /* Build configuration list for PBXNativeTarget "BLESensorTests" */ = {
 			isa = XCConfigurationList;
@@ -472,6 +477,7 @@
 				616C12521921426B002FF104 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
