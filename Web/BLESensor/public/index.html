@@ -4,7 +4,9 @@
   </head>
   <body>
 
-    <div id='val'>val goes here.</div>
+    <div>
+      <span id='key'>x: </span><span id='val'></span>
+    </div>
 
     <script src='http://localhost:1337/socket.io/socket.io.js'></script>
     <script type="text/javascript">
@@ -16,8 +18,9 @@
       });
 
       socket.on('dataReceived', function(data) {
-        console.log(data);
-        document.getElementById('val').innerText = data.val;
+        if (data.val) {
+          document.getElementById('val').innerText = data.val;
+        }
       });
 
     </script>

@@ -81,6 +81,7 @@ NSTimer *rssiTimer;
     // Schedule to read RSSI every 1 sec.
     rssiTimer = [NSTimer scheduledTimerWithTimeInterval:(float)1.0 target:self selector:@selector(readRSSITimer:) userInfo:nil repeats:YES];
     
+    // start Motion Manager
     [self startSensorUpdates];
 }
 
@@ -183,15 +184,29 @@ NSTimer *rssiTimer;
             
             
             // gravity
-            NSNumber *myGravXNumber = [NSNumber numberWithDouble:deviceMotion.gravity.x];
+            NSString *myGravXString = [NSString stringWithFormat:@"%.2f", deviceMotion.gravity.x];
+            //NSNumber *myGravXNumber = [NSNumber numberWithDouble:deviceMotion.gravity.x];
             //NSNumber *myGravYNumber = [NSNumber numberWithDouble:deviceMotion.gravity.y];
             //NSNumber *myGravZNumber = [NSNumber numberWithDouble:deviceMotion.gravity.z];
-
-            UInt8 buf[6] = {0x26, 0x2d, 0, 0x2e, 9, 2}; // begin all buffers w '&' (0x26)
+            
+            const char *c = [myGravXString UTF8String];
+            
+            //int result = c[1] - '0';
+            //NSLog(@"Result: %d", result);
+            
+            int mySign = 0x00;
+            if (myGravXString.length == 5) {
+                mySign = 0x2d;
+                UInt8 buf[6] = {0x26, mySign, c[1] - '0', 0x2e, c[3] - '0', c[4] - '0'}; // begin all buffers w '&' (0x26)
+                NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+                [ble write:data];
+            } else {
+                UInt8 buf[6] = {0x26, mySign, c[0] - '0', 0x2e, c[2] - '0', c[3] - '0'}; // begin all buffers w '&' (0x26)
+                NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+                [ble write:data];
+            }
             
             
-            NSData *data = [[NSData alloc] initWithBytes:buf length:6];
-            [ble write:data];
             
         }];
     }
