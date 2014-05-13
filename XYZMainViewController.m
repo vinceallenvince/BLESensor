@@ -143,12 +143,22 @@ NSTimer *rssiTimer;
 - (IBAction)btnTest:(id)sender
 {
     NSLog(@"sending...");
-    UInt8 buf[3] = {0x01, 0x00, 0x00};
     
-    buf[1] = 0x01;
+
+    // '-' = 0x2d
+    // '.' = 0x2e
     
-    NSData *data = [[NSData alloc] initWithBytes:buf length:3];
+    /*
+      Buffer format:
+      '&', sign (if positive, 0), leading int, decimal (0x2e), first decimal pos, second decimal pos
+     */
+    
+    UInt8 buf[6] = {0x26, 0x2d, 0, 0x2e, 9, 2}; // begin all buffers w '&' (0x26)
+    
+    
+    NSData *data = [[NSData alloc] initWithBytes:buf length:6];
     [ble write:data];
+    
 }
 
 @end

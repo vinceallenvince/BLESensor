@@ -47,9 +47,9 @@ void loop()
     
     digitalWrite(LED_PIN, HIGH);
     
-    Serial.println(data0);
-    Serial.println(data1);
-    Serial.println(data2);
+    Serial.write(data0);
+    Serial.write(data1);
+    Serial.write(data2);
     
     /*if (data0 == 0x01)  // Command is to control digital out pin
     {
