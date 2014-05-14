@@ -173,7 +173,7 @@ NSTimer *rssiTimer;
 {
     
     NSTimeInterval delta = 0.005;
-    NSTimeInterval updateInterval = deviceMotionMin + delta * 10; // * some offset
+    NSTimeInterval updateInterval = deviceMotionMin + delta * 1; // * some offset
     
     CMMotionManager *mManager = [(XYZAppDelegate *)[[UIApplication sharedApplication] delegate] sharedManager];
     
@@ -184,25 +184,27 @@ NSTimer *rssiTimer;
             
             
             // gravity
-            NSString *myGravXString = [NSString stringWithFormat:@"%.2f", deviceMotion.gravity.x];
+            NSString *myGravXString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.x];
             //NSNumber *myGravXNumber = [NSNumber numberWithDouble:deviceMotion.gravity.x];
             //NSNumber *myGravYNumber = [NSNumber numberWithDouble:deviceMotion.gravity.y];
             //NSNumber *myGravZNumber = [NSNumber numberWithDouble:deviceMotion.gravity.z];
             
-            const char *c = [myGravXString UTF8String];
+            //NSLog(myGravXString);
+            
+            const char *charX = [myGravXString UTF8String];
             
             //int result = c[1] - '0';
             //NSLog(@"Result: %d", result);
             
             int mySign = 0x00;
-            if (myGravXString.length == 5) {
-                mySign = 0x2d;
-                UInt8 buf[6] = {0x26, mySign, c[1] - '0', 0x2e, c[3] - '0', c[4] - '0'}; // begin all buffers w '&' (0x26)
-                NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+            if (myGravXString.length == 6) {
+                mySign = '-';
+                UInt8 buf[8] = {'&', 'x', mySign, charX[1] - '0', 0x2e, charX[3] - '0', charX[4] - '0', charX[5] - '0'}; // begin all buffers w '&' (0x26)
+                NSData *data = [[NSData alloc] initWithBytes:buf length:8];
                 [ble write:data];
             } else {
-                UInt8 buf[6] = {0x26, mySign, c[0] - '0', 0x2e, c[2] - '0', c[3] - '0'}; // begin all buffers w '&' (0x26)
-                NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+                UInt8 buf[8] = {'&', 'x', mySign, charX[0] - '0', 0x2e, charX[2] - '0', charX[3] - '0', charX[4] - '0'}; // begin all buffers w '&' (0x26)
+                NSData *data = [[NSData alloc] initWithBytes:buf length:8];
                 [ble write:data];
             }
             

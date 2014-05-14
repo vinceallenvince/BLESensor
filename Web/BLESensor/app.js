@@ -42,32 +42,57 @@ function connectSerial(data) {
     console.log('serial port open!');
 
     sp.on('data', function(data) {
-      console.log(data);
+      //console.log(data);
 
+      var axis, gravity = {
+        x: 0,
+        y: 0,
+        z: 0
+      };
+
+      /*
+       If data begins with a '&' (ascii code 38),
+       we have a buffer.
+       */
       if (data[0] == 38) { // '&'
 
+        var axis = data[1]; //charCode
+
+        var positions = data.slice(2, 8); // slice to end?
+
         var val = '';
-        var sign = data[1] == 45 ? '-' : '';
+        var sign = positions[0] == 45 ? '-' : '';
 
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < positions.length; i++) {
 
-          if (data[i] == 46) {
+          if (positions[i] == 46) {
             val = val + '.';
             continue;
           }
 
-          if (data[i] != 38 && data[i] != 45) {
-            val = val + data[i];
+          if (positions[i] != 38 && positions[i] != 45 && positions[i] != 255) {
+            val = val + positions[i];
           }
         };
 
         val = parseFloat(sign + val);
-        console.log(val);
+        //console.log(val);
 
         // when we receive data, publish it via the emitter
         emitter.emit('dataReceived', {
           val: val
         });
+
+        /*
+          want this formatted:
+          {
+            gravity: {
+              x: 0.03,
+              y: -1.2,
+              z: 0.89
+            }
+          }
+         */
 
       }
 
