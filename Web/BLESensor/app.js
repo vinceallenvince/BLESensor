@@ -41,59 +41,44 @@ function connectSerial(data) {
 
     console.log('serial port open!');
 
+    var buffer;
+    var mode = 0;
+
     sp.on('data', function(data) {
+
       //console.log(data);
 
-      var axis, gravity = {
-        x: 0,
-        y: 0,
-        z: 0
-      };
-
       /*
-       If data begins with a '&' (ascii code 38),
-       we have a buffer.
+        want this formatted:
+        {
+          gravity: {
+            x: 0.03,
+            y: -1.2,
+            z: 0.89
+          }
+        }
        */
-      if (data[0] == 38) { // '&'
 
-        var axis = data[1]; //charCode
+      // loop over data
+      // if char == '!', reset buffer, start loading data
+      // if char == null, emit data
 
-        var positions = data.slice(2, 8); // slice to end?
-
-        var val = '';
-        var sign = positions[0] == 45 ? '-' : '';
-
-        for (var i = 0; i < positions.length; i++) {
-
-          if (positions[i] == 46) {
-            val = val + '.';
-            continue;
-          }
-
-          if (positions[i] != 38 && positions[i] != 45 && positions[i] != 255) {
-            val = val + positions[i];
-          }
-        };
-
-        val = parseFloat(sign + val);
-        //console.log(val);
-
-        // when we receive data, publish it via the emitter
-        emitter.emit('dataReceived', {
-          val: val
-        });
-
-        /*
-          want this formatted:
-          {
-            gravity: {
-              x: 0.03,
-              y: -1.2,
-              z: 0.89
-            }
-          }
-         */
-
+      for (var i = 0; i < data.length; i++) {
+        if (String.fromCharCode(data[i]) == '!') { // package begins with '!'
+          buffer = '';
+          mode = 1;
+          continue;
+        } else if (data[i] == 0) { // package ends w null
+          mode = 2;
+          //console.log(buffer);
+          emitter.emit('dataReceived', {
+            val: buffer
+          });
+          continue;
+        }
+        if (mode == 1) {
+          buffer = buffer + String.fromCharCode(data[i]);
+        }
       }
 
     });

@@ -182,7 +182,6 @@ NSTimer *rssiTimer;
         [mManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) {
             
             
-            
             // gravity
             NSString *myGravXString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.x];
             //NSNumber *myGravXNumber = [NSNumber numberWithDouble:deviceMotion.gravity.x];
@@ -191,23 +190,32 @@ NSTimer *rssiTimer;
             
             //NSLog(myGravXString);
             
-            const char *charX = [myGravXString UTF8String];
-            
-            //int result = c[1] - '0';
-            //NSLog(@"Result: %d", result);
-            
-            int mySign = 0x00;
-            if (myGravXString.length == 6) {
-                mySign = '-';
-                UInt8 buf[8] = {'&', 'x', mySign, charX[1] - '0', 0x2e, charX[3] - '0', charX[4] - '0', charX[5] - '0'}; // begin all buffers w '&' (0x26)
-                NSData *data = [[NSData alloc] initWithBytes:buf length:8];
-                [ble write:data];
-            } else {
-                UInt8 buf[8] = {'&', 'x', mySign, charX[0] - '0', 0x2e, charX[2] - '0', charX[3] - '0', charX[4] - '0'}; // begin all buffers w '&' (0x26)
-                NSData *data = [[NSData alloc] initWithBytes:buf length:8];
-                [ble write:data];
+            // Explode string into an array
+            NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[myGravXString length]];
+            for (int i=0; i < [myGravXString length]; i++) {
+                NSString *ichar  = [NSString stringWithFormat:@"%c", [myGravXString characterAtIndex:i]];
+                [characters addObject:ichar];
             }
             
+            // create a buffer with 2 extra spaces
+            UInt8 buf[[myGravXString length] + 2];
+            
+            // first char is '!'
+            buf[0] = 0x21;
+            
+            // fill the buffer with char's ascii code
+            for (int i = 0; i < [myGravXString length]; i++) {
+                buf[i + 1] = [characters[i] characterAtIndex:0];
+            }
+            
+            // last char is null
+            buf[[myGravXString length] + 1] = 0x0;
+            
+            // create a data object with buffer
+            NSData *data = [[NSData alloc] initWithBytes:buf length:[myGravXString length] + 2];
+            
+            // send the data via BLE
+            [ble write:data];
             
             
         }];
