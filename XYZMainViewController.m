@@ -192,12 +192,16 @@ NSTimer *rssiTimer;
             
             // Explode string into an array
             NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[myGravXString length]];
+            
             for (int i=0; i < [myGravXString length]; i++) {
                 NSString *ichar  = [NSString stringWithFormat:@"%c", [myGravXString characterAtIndex:i]];
                 [characters addObject:ichar];
             }
             
-            // create a buffer with 2 extra spaces
+            // loop over each string that represents a value
+            // add a '|' character after each
+            
+            // create a buffer with 2 extra spaces // !! use array count + 2
             UInt8 buf[[myGravXString length] + 2];
             
             // first char is '!'

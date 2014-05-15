@@ -47,6 +47,22 @@ function connectSerial(data) {
     sp.on('data', function(data) {
 
       //console.log(data);
+      /*
+
+        - data package should look like
+        ![val]|[val]|[val]|[val]|[val]|[val]0
+
+        First three values are:
+        - gravity.x
+        - gravity.y
+        - gravity.z
+
+        Second three values are:
+        - userAcceleration.x
+        - userAcceleration.y
+        - userAcceleration.z
+
+       */
 
       /*
         want this formatted:
@@ -70,7 +86,6 @@ function connectSerial(data) {
           continue;
         } else if (data[i] == 0) { // package ends w null
           mode = 2;
-          //console.log(buffer);
           emitter.emit('dataReceived', {
             val: buffer
           });
