@@ -42,7 +42,10 @@ function connectSerial(data) {
     console.log('serial port open!');
 
     var buffer;
+    var gravityX = '', gravityY = '', gravityZ = '';
+    var accelX = '', accelY = '', accelZ = '';
     var mode = 0;
+    var index = null;
 
     sp.on('data', function(data) {
 
@@ -50,12 +53,12 @@ function connectSerial(data) {
       /*
 
         - data package should look like
-        ![val]|[val]|[val]|[val]|[val]|[val]0
+        ![type][val]0
 
-        First three values are:
-        - gravity.x
-        - gravity.y
-        - gravity.z
+        Values map to type:
+        A = gravity.x
+        B = gravity.y
+        C = gravity.z
 
         Second three values are:
         - userAcceleration.x
@@ -71,6 +74,11 @@ function connectSerial(data) {
             x: 0.03,
             y: -1.2,
             z: 0.89
+          },
+          accel: {
+            x: 0.03,
+            y: -1.2,
+            z: 0.89
           }
         }
        */
@@ -80,19 +88,57 @@ function connectSerial(data) {
       // if char == null, emit data
 
       for (var i = 0; i < data.length; i++) {
+
         if (String.fromCharCode(data[i]) == '!') { // package begins with '!'
           buffer = '';
           mode = 1;
           continue;
         } else if (data[i] == 0) { // package ends w null
           mode = 2;
+          index = null;
+          var vals = {
+            gravity: {
+              x: gravityX,
+              y: gravityY,
+              z: gravityZ
+            }/*,
+            accel: {
+              x: accelX,
+              y: accelY,
+              z: accelZ
+            }*/
+          };
+          console.log(vals);
           emitter.emit('dataReceived', {
-            val: buffer
+            val: vals
           });
-          continue;
+          // reset vals
+          gravityX = '';
+          gravityY = '';
+          gravityZ = '';
+          accelX = '';
+          accelY = '';
+          accelZ = '';
         }
+
         if (mode == 1) {
-          buffer = buffer + String.fromCharCode(data[i]);
+          var chr = String.fromCharCode(data[i]);
+
+          if (chr === 'A' || chr === 'B' || chr === 'C') {
+            index = chr;
+            continue;
+          }
+          switch(index) {
+            case 'A':
+              gravityX = gravityX + chr;
+              break;
+            case 'B':
+              gravityY = gravityY + chr;
+              break;
+            case 'C':
+              gravityZ = gravityZ + chr;
+              break;
+          }
         }
       }
 
