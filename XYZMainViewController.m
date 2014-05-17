@@ -152,22 +152,13 @@ NSTimer *rssiTimer;
 {
     NSLog(@"sending...");
     
-
-    // '-' = 0x2d
-    // '.' = 0x2e
-    
-    /*
-      Buffer format:
-      '&', sign (if positive, 0), leading int, decimal (0x2e), first decimal pos, second decimal pos
-     */
-    
     UInt8 buf[6] = {0x26, 0x2d, 0, 0x2e, 9, 2}; // begin all buffers w '&' (0x26)
-    
     
     NSData *data = [[NSData alloc] initWithBytes:buf length:6];
     [ble write:data];
     
 }
+
 
 - (void)startSensorUpdates
 {
@@ -184,44 +175,60 @@ NSTimer *rssiTimer;
             
             // gravity
             NSString *myGravXString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.x];
-            //NSNumber *myGravXNumber = [NSNumber numberWithDouble:deviceMotion.gravity.x];
-            //NSNumber *myGravYNumber = [NSNumber numberWithDouble:deviceMotion.gravity.y];
-            //NSNumber *myGravZNumber = [NSNumber numberWithDouble:deviceMotion.gravity.z];
+            NSString *myGravYString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.y];
+            NSString *myGravZString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.z];
             
-            //NSLog(myGravXString);
+            //NSLog(myGravZString);
             
-            // Explode string into an array
-            NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[myGravXString length]];
-            for (int i=0; i < [myGravXString length]; i++) {
-                NSString *ichar  = [NSString stringWithFormat:@"%c", [myGravXString characterAtIndex:i]];
-                [characters addObject:ichar];
-            }
+            NSData *dataX = [self packageDataAsType:0x41 FromString:myGravXString];
+            [ble write:dataX];
             
-            // create a buffer with 2 extra spaces
-            UInt8 buf[[myGravXString length] + 2];
+            NSData *dataY = [self packageDataAsType:0x42 FromString:myGravYString];
+            [ble write:dataY];
             
-            // first char is '!'
-            buf[0] = 0x21;
-            
-            // fill the buffer with char's ascii code
-            for (int i = 0; i < [myGravXString length]; i++) {
-                buf[i + 1] = [characters[i] characterAtIndex:0];
-            }
-            
-            // last char is null
-            buf[[myGravXString length] + 1] = 0x0;
-            
-            // create a data object with buffer
-            NSData *data = [[NSData alloc] initWithBytes:buf length:[myGravXString length] + 2];
-            
-            // send the data via BLE
-            [ble write:data];
+            NSData *dataZ = [self packageDataAsType:0x43 FromString:myGravZString];
+            [ble write:dataZ];
             
             
         }];
     }
     
 }
+
+- (NSData *)packageDataAsType:(UInt8)type FromString:(NSString *)str
+{
+    // Explode string into an array
+    NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[str length] + 1];
+    for (int i = 0; i < [str length]; i++) {
+        NSString *ichar  = [NSString stringWithFormat:@"%c", [str characterAtIndex:i]];
+        [characters addObject:ichar];
+    }
+    
+    // create a buffer with w extra space
+    UInt8 buf[[characters count] + 3];
+    
+    // first char is '!'
+    buf[0] = 0x21;
+    
+    // second char is type
+    buf[1] = type;
+    
+    // fill the buffer with char's ascii code
+    for (int i = 0; i < [characters count]; i++) {
+        buf[i + 2] = [characters[i] characterAtIndex:0];
+    }
+    
+    // end the buffer with null
+    buf[[characters count] + 2] = 0x00;
+    
+    // create data object
+    NSData *data = [[NSData alloc] initWithBytes:buf length:[characters count] + 3];
+    
+    return data;
+    
+}
+
+
 
 @end
 

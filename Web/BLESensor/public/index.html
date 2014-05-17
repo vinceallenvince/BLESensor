@@ -1,13 +1,28 @@
 <html>
   <head>
-
+    <style>
+      #box {
+        position: absolute;
+        top: 0; left: 0;
+      }
+    </style>
   </head>
   <body>
 
     <div id='box'></div>
-    <div>
-      <span id='key'>x: </span><span id='val'></span>
-    </div>
+
+    <table id='vals'>
+      <tr>
+        <td id='keyX'>X: </td><td id='valX'></td>
+      </tr>
+      <tr>
+        <td id='keyY'>Y: </td><td id='valY'></td>
+      </tr>
+      <tr>
+        <td id='keyZ'>Z: </td><td id='valZ'></td>
+      </tr>
+    </table>
+
 
     <script src='http://localhost:1337/socket.io/socket.io.js'></script>
     <script type="text/javascript">
@@ -22,9 +37,18 @@
 
       socket.on('dataReceived', function(data) {
         if (data.val) {
-          document.getElementById('val').innerText = data.val;
-          iPhoneAngle = data.val;
+          if (data.val.gravity.x) {
+            document.getElementById('valX').innerText = data.val.gravity.x;
+            iPhoneAngle = data.val.gravity.x;
+          }
+          if (data.val.gravity.y) {
+            document.getElementById('valY').innerText = data.val.gravity.y;
+          }
+          if (data.val.gravity.z) {
+            document.getElementById('valZ').innerText = data.val.gravity.z;
+          }
         }
+
       });
 
       window.requestAnimFrame = (function(callback){
