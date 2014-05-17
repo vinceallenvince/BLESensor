@@ -159,6 +159,7 @@ NSTimer *rssiTimer;
     
 }
 
+
 - (void)startSensorUpdates
 {
     
@@ -179,97 +180,13 @@ NSTimer *rssiTimer;
             
             //NSLog(myGravZString);
             
-   
-            // Explode string into an array
-            NSMutableArray *charactersX = [[NSMutableArray alloc] initWithCapacity:[myGravXString length] + 1];
-            NSMutableArray *charactersY = [[NSMutableArray alloc] initWithCapacity:[myGravYString length] + 1];
-            NSMutableArray *charactersZ = [[NSMutableArray alloc] initWithCapacity:[myGravZString length] + 1];
-            
-            
-            // loop over each string that represents a value
-            
-            // *** myGravXString ***
-            for (int i = 0; i < [myGravXString length]; i++) {
-                NSString *ichar  = [NSString stringWithFormat:@"%c", [myGravXString characterAtIndex:i]];
-                [charactersX addObject:ichar];
-            }
-            
-            // create a buffer with w extra space
-            UInt8 bufX[[charactersX count] + 3];
-            
-            // first char is '!'
-            bufX[0] = 0x21;
-            
-            // second char is 'A'
-            bufX[1] = 0x41;
-            
-            // fill the buffer with char's ascii code
-            for (int i = 0; i < [charactersX count]; i++) {
-                bufX[i + 2] = [charactersX[i] characterAtIndex:0];
-            }
-            
-            bufX[[charactersX count] + 2] = 0x00;
-            
-            NSData *dataX = [[NSData alloc] initWithBytes:bufX length:[charactersX count] + 3];
-            
-            // send the data via BLE
+            NSData *dataX = [self packageDataAsType:0x41 FromString:myGravXString];
             [ble write:dataX];
             
-            
-            
-            // *** myGravYString ***
-            for (int i = 0; i < [myGravYString length]; i++) {
-                NSString *ichar  = [NSString stringWithFormat:@"%c", [myGravYString characterAtIndex:i]];
-                [charactersY addObject:ichar];
-            }
-            
-            // create a buffer with w extra space
-            UInt8 bufY[[charactersY count] + 3];
-            
-            // first char is '!'
-            bufY[0] = 0x21;
-            
-            // second char is 'B'
-            bufY[1] = 0x42;
-            
-            // fill the buffer with char's ascii code
-            for (int i = 0; i < [charactersY count]; i++) {
-                bufY[i + 2] = [charactersY[i] characterAtIndex:0];
-            }
-            
-            bufY[[charactersY count] + 2] = 0x00;
-            
-            NSData *dataY = [[NSData alloc] initWithBytes:bufY length:[charactersY count] + 3];
-            
-            // send the data via BLE
+            NSData *dataY = [self packageDataAsType:0x42 FromString:myGravYString];
             [ble write:dataY];
             
-            
-            // *** myGravZString ***
-            for (int i = 0; i < [myGravZString length]; i++) {
-                NSString *ichar  = [NSString stringWithFormat:@"%c", [myGravZString characterAtIndex:i]];
-                [charactersZ addObject:ichar];
-            }
-            
-            // create a buffer with w extra space
-            UInt8 bufZ[[charactersZ count] + 3];
-            
-            // first char is '!'
-            bufZ[0] = 0x21;
-            
-            // second char is 'C'
-            bufZ[1] = 0x43;
-            
-            // fill the buffer with char's ascii code
-            for (int i = 0; i < [charactersZ count]; i++) {
-                bufZ[i + 2] = [charactersZ[i] characterAtIndex:0];
-            }
-            
-            bufZ[[charactersZ count] + 2] = 0x00;
-            
-            NSData *dataZ = [[NSData alloc] initWithBytes:bufZ length:[charactersZ count] + 3];
-            
-            // send the data via BLE
+            NSData *dataZ = [self packageDataAsType:0x43 FromString:myGravZString];
             [ble write:dataZ];
             
             
@@ -277,6 +194,41 @@ NSTimer *rssiTimer;
     }
     
 }
+
+- (NSData *)packageDataAsType:(UInt8)type FromString:(NSString *)str
+{
+    // Explode string into an array
+    NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[str length] + 1];
+    for (int i = 0; i < [str length]; i++) {
+        NSString *ichar  = [NSString stringWithFormat:@"%c", [str characterAtIndex:i]];
+        [characters addObject:ichar];
+    }
+    
+    // create a buffer with w extra space
+    UInt8 buf[[characters count] + 3];
+    
+    // first char is '!'
+    buf[0] = 0x21;
+    
+    // second char is type
+    buf[1] = type;
+    
+    // fill the buffer with char's ascii code
+    for (int i = 0; i < [characters count]; i++) {
+        buf[i + 2] = [characters[i] characterAtIndex:0];
+    }
+    
+    // end the buffer with null
+    buf[[characters count] + 2] = 0x00;
+    
+    // create data object
+    NSData *data = [[NSData alloc] initWithBytes:buf length:[characters count] + 3];
+    
+    return data;
+    
+}
+
+
 
 @end
 
