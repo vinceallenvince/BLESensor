@@ -17,7 +17,7 @@ static const NSTimeInterval deviceMotionMin = 0.01;
 
 @implementation XYZMainViewController
 
-@synthesize ble;
+@synthesize ble, sendRoll, sendPitch, sendYaw, sendGravX, sendGravY, sendGravZ, sendAccelX, sendAccelY, sendAccelZ, packageIndex;
 
 - (void)viewDidLoad
 {
@@ -27,9 +27,9 @@ static const NSTimeInterval deviceMotionMin = 0.01;
     [ble controlSetup];
     ble.delegate = self;
     
-    [btnTest setEnabled:false];
+    [btnCalibrate setEnabled:false];
     
-    
+    [self disableSwitches];
 }
 
 - (void)didReceiveMemoryWarning
@@ -53,6 +53,8 @@ NSTimer *rssiTimer;
     //   lblAnalogIn.text = @"----";
     
     [rssiTimer invalidate];
+    [btnCalibrate setEnabled:false];
+    [self disableSwitches];
 }
 
 // When RSSI is changed, this will be called
@@ -132,10 +134,13 @@ NSTimer *rssiTimer;
 
 -(void) connectionTimer:(NSTimer *)timer
 {
-    [btnTest setEnabled:true];
+    
+    [self enableSwitches];
     
     [btnConnect setEnabled:true];
     [btnConnect setTitle:@"Disconnect" forState:UIControlStateNormal];
+    
+    [btnCalibrate setEnabled:true];
     
     if (ble.peripherals.count > 0)
     {
@@ -148,17 +153,16 @@ NSTimer *rssiTimer;
     }
 }
 
-- (IBAction)btnTest:(id)sender
+- (IBAction)btnCalibrate:(id)sender
 {
     NSLog(@"sending...");
     
-    UInt8 buf[6] = {0x26, 0x2d, 0, 0x2e, 9, 2}; // begin all buffers w '&' (0x26)
+    UInt8 buf[3] = {0x21, 0x24, 0x00};
     
-    NSData *data = [[NSData alloc] initWithBytes:buf length:6];
+    NSData *data = [[NSData alloc] initWithBytes:buf length:3];
     [ble write:data];
     
 }
-
 
 - (void)startSensorUpdates
 {
@@ -173,23 +177,69 @@ NSTimer *rssiTimer;
         [mManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *deviceMotion, NSError *error) {
             
             
+            
+            // attitude
+            if (sendRoll && packageIndex == 0) {
+                NSString *myRoll = [NSString stringWithFormat:@"%.3f", deviceMotion.attitude.roll];
+                NSData *dataRoll = [self packageDataAsType:0x41 FromString:myRoll];
+                [ble write:dataRoll];
+            }
+            
+            if (sendPitch && packageIndex == 1) {
+                NSString *myPitch = [NSString stringWithFormat:@"%.3f", deviceMotion.attitude.pitch];
+                NSData *dataPitch = [self packageDataAsType:0x42 FromString:myPitch];
+                [ble write:dataPitch];
+            }
+            
+            if (sendYaw && packageIndex == 2) {
+                NSString *myYaw = [NSString stringWithFormat:@"%.3f", deviceMotion.attitude.yaw];
+                NSData *dataYaw = [self packageDataAsType:0x43 FromString:myYaw];
+                [ble write:dataYaw];
+            }
+            
             // gravity
-            NSString *myGravXString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.x];
-            NSString *myGravYString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.y];
-            NSString *myGravZString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.z];
+            if (sendGravX && packageIndex == 3) {
+                NSString *myGravXString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.x];
+                NSData *dataX = [self packageDataAsType:0x44 FromString:myGravXString];
+                [ble write:dataX];
+            }
             
-            //NSLog(myGravZString);
+            if (sendGravY && packageIndex == 4) {
+                NSString *myGravYString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.y];
+                NSData *dataY = [self packageDataAsType:0x45 FromString:myGravYString];
+                [ble write:dataY];
+            }
             
-            NSData *dataX = [self packageDataAsType:0x41 FromString:myGravXString];
-            [ble write:dataX];
+            if (sendGravZ && packageIndex == 5) {
+                NSString *myGravZString = [NSString stringWithFormat:@"%.3f", deviceMotion.gravity.z];
+                NSData *dataZ = [self packageDataAsType:0x46 FromString:myGravZString];
+                [ble write:dataZ];
+            }
             
-            NSData *dataY = [self packageDataAsType:0x42 FromString:myGravYString];
-            [ble write:dataY];
+            // userAcceleration
+            if (sendAccelX && packageIndex == 6) {
+                NSString *myAccelXString = [NSString stringWithFormat:@"%.3f", deviceMotion.userAcceleration.x];
+                NSData *dataAccelX = [self packageDataAsType:0x47 FromString:myAccelXString];
+                [ble write:dataAccelX];
+            }
             
-            NSData *dataZ = [self packageDataAsType:0x43 FromString:myGravZString];
-            [ble write:dataZ];
+            if (sendAccelY && packageIndex == 7) {
+                NSString *myAccelYString = [NSString stringWithFormat:@"%.3f", deviceMotion.userAcceleration.y];
+                NSData *dataAccelY = [self packageDataAsType:0x48 FromString:myAccelYString];
+                [ble write:dataAccelY];
+            }
             
+            if (sendAccelZ && packageIndex == 8) {
+                NSString *myAccelZString = [NSString stringWithFormat:@"%.3f", deviceMotion.userAcceleration.z];
+                NSData *dataAccelZ = [self packageDataAsType:0x49 FromString:myAccelZString];
+                [ble write:dataAccelZ];
+            }
             
+            if (packageIndex < 9) {
+                packageIndex++;
+            } else {
+                packageIndex = 0;
+            }
         }];
     }
     
@@ -225,10 +275,115 @@ NSTimer *rssiTimer;
     NSData *data = [[NSData alloc] initWithBytes:buf length:[characters count] + 3];
     
     return data;
-    
+
 }
 
+- (void)enableSwitches
+{
+    [switchRoll setEnabled:true];
+    [switchPitch setEnabled:true];
+    [switchYaw setEnabled:true];
+    [switchGravX setEnabled:true];
+    [switchGravY setEnabled:true];
+    [switchGravZ setEnabled:true];
+    [switchAccelX setEnabled:true];
+    [switchAccelY setEnabled:true];
+    [switchAccelZ setEnabled:true];
+}
 
+- (void)disableSwitches
+{
+    [switchRoll setEnabled:false];
+    [switchPitch setEnabled:false];
+    [switchYaw setEnabled:false];
+    [switchGravX setEnabled:false];
+    [switchGravY setEnabled:false];
+    [switchGravZ setEnabled:false];
+    [switchAccelX setEnabled:false];
+    [switchAccelY setEnabled:false];
+    [switchAccelZ setEnabled:false];
+}
+
+- (IBAction)switchRoll:(id)sender
+{
+    if (switchRoll.on) {
+        sendRoll = true;
+    } else {
+        sendRoll = false;
+    }
+}
+
+- (IBAction)switchPitch:(id)sender
+{
+    if (switchPitch.on) {
+        sendPitch = true;
+    } else {
+        sendPitch = false;
+    }
+}
+
+- (IBAction)switchYaw:(id)sender
+{
+    if (switchYaw.on) {
+        sendYaw = true;
+    } else {
+        sendYaw = false;
+    }
+}
+
+- (IBAction)switchGravX:(id)sender
+{
+    if (switchGravX.on) {
+        sendGravX = true;
+    } else {
+        sendGravX = false;
+    }
+}
+
+- (IBAction)switchGravY:(id)sender
+{
+    if (switchGravY.on) {
+        sendGravY = true;
+    } else {
+        sendGravY = false;
+    }
+}
+
+- (IBAction)switchGravZ:(id)sender
+{
+    if (switchGravZ.on) {
+        sendGravZ = true;
+    } else {
+        sendGravZ = false;
+    }
+}
+
+- (IBAction)switchAccelX:(id)sender
+{
+    if (switchAccelX.on) {
+        sendAccelX = true;
+    } else {
+        sendAccelX = false;
+    }
+}
+
+- (IBAction)switchAccelY:(id)sender
+{
+    if (switchAccelY.on) {
+        sendAccelY = true;
+    } else {
+        sendAccelY = false;
+    }
+}
+
+- (IBAction)switchAccelZ:(id)sender
+{
+    if (switchAccelZ.on) {
+        sendAccelZ = true;
+    } else {
+        sendAccelZ = false;
+    }
+}
 
 @end
 

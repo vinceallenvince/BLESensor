@@ -1,18 +1,19 @@
 //
-//  BLESensorTests.m
-//  BLESensorTests
+//  XYZBoxTestCase.m
+//  BLESensor
 //
-//  Created by Vince Allen on 5/12/14.
+//  Created by Vince Allen on 5/18/14.
 //  Copyright (c) 2014 Vince Allen. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
+#import "XYZBox.h"
 
-@interface BLESensorTests : XCTestCase
+@interface XYZBoxTestCase : XCTestCase
 
 @end
 
-@implementation BLESensorTests
+@implementation XYZBoxTestCase
 
 - (void)setUp
 {
@@ -26,9 +27,11 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testReturnsSumOfTwoNumbers
 {
-    //XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    XYZBox *box = [[XYZBox alloc] init];
+    int sum = [box addX:1 ToY:3];
+    XCTAssertEqual(sum, 4, @"Should have added to numbers.");
 }
 
 @end

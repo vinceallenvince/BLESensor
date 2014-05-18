@@ -42,10 +42,12 @@ function connectSerial(data) {
     console.log('serial port open!');
 
     var buffer;
+    var roll = '', pitch = '', yaw = '';
     var gravityX = '', gravityY = '', gravityZ = '';
     var accelX = '', accelY = '', accelZ = '';
     var mode = 0;
     var index = null;
+    var calibrate = false;
 
     sp.on('data', function(data) {
 
@@ -56,29 +58,34 @@ function connectSerial(data) {
         ![type][val]0
 
         Values map to type:
-        A = gravity.x
-        B = gravity.y
-        C = gravity.z
-
-        Second three values are:
-        - userAcceleration.x
-        - userAcceleration.y
-        - userAcceleration.z
-
+        A = attitude.roll
+        B = attitude.pitch
+        C = attitude.yaw
+        D = gravity.x
+        E = gravity.y
+        F = gravity.z
+        G = accel.x
+        H = accel.y
+        I = accel.z
        */
 
       /*
-        want this formatted:
+        Want this format:
         {
+          attitude: {
+            roll: 0.03,
+            pitch: -1.2,
+            yaw: 0.89
+          },
           gravity: {
             x: 0.03,
             y: -1.2,
             z: 0.89
           },
           accel: {
-            x: 0.03,
-            y: -1.2,
-            z: 0.89
+						x: 1.8,
+						y: 0.01,
+						z: -0.03
           }
         }
        */
@@ -97,22 +104,32 @@ function connectSerial(data) {
           mode = 2;
           index = null;
           var vals = {
+            attitude: {
+              roll: roll,
+              pitch: pitch,
+              yaw: yaw
+            },
             gravity: {
               x: gravityX,
               y: gravityY,
               z: gravityZ
-            }/*,
+            },
             accel: {
               x: accelX,
               y: accelY,
               z: accelZ
-            }*/
+            }
           };
-          console.log(vals);
+          //console.log(vals);
           emitter.emit('dataReceived', {
+          	calibrate: calibrate,
             val: vals
           });
           // reset vals
+          calibrate = false;
+          roll = '';
+          pitch = '';
+          yaw = '';
           gravityX = '';
           gravityY = '';
           gravityZ = '';
@@ -124,19 +141,39 @@ function connectSerial(data) {
         if (mode == 1) {
           var chr = String.fromCharCode(data[i]);
 
-          if (chr === 'A' || chr === 'B' || chr === 'C') {
+          if (chr === 'A' || chr === 'B' || chr === 'C' || chr === 'D' || chr === 'E' || chr === 'F' || chr === 'G' || chr === 'H' || chr === 'I') {
             index = chr;
             continue;
+          } else if (chr === '$') { // calibrate
+          	calibrate = true;
           }
           switch(index) {
             case 'A':
-              gravityX = gravityX + chr;
+              roll = roll + chr;
               break;
             case 'B':
-              gravityY = gravityY + chr;
+              pitch = pitch + chr;
               break;
             case 'C':
+              yaw = yaw + chr;
+              break;
+            case 'D':
+              gravityX = gravityX + chr;
+              break;
+            case 'E':
+              gravityY = gravityY + chr;
+              break;
+            case 'F':
               gravityZ = gravityZ + chr;
+              break;
+            case 'G':
+              accelX = accelX + chr;
+              break;
+            case 'H':
+              accelY = accelY + chr;
+              break;
+            case 'I':
+              accelZ = accelZ + chr;
               break;
           }
         }

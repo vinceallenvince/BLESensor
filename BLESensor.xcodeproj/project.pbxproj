@@ -23,6 +23,9 @@
 		616C125F19214A13002FF104 /* BLE.m in Sources */ = {isa = PBXBuildFile; fileRef = 616C125D19214A13002FF104 /* BLE.m */; };
 		616C126119214B17002FF104 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 616C126019214B17002FF104 /* Main.storyboard */; };
 		616C12631922825C002FF104 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 616C12621922825C002FF104 /* CoreMotion.framework */; };
+		61CA68281929085500E689BB /* XYZBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 61CA68271929085500E689BB /* XYZBox.m */; };
+		61CA682A1929089F00E689BB /* XYZBoxTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 61CA68291929089F00E689BB /* XYZBoxTestCase.m */; };
+		61CA682C19290C2B00E689BB /* XYZMainViewControllerTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 61CA682B19290C2B00E689BB /* XYZMainViewControllerTestCase.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +62,10 @@
 		616C125E19214A13002FF104 /* BLEDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLEDefines.h; sourceTree = "<group>"; };
 		616C126019214B17002FF104 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		616C12621922825C002FF104 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		61CA68261929085500E689BB /* XYZBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYZBox.h; sourceTree = "<group>"; };
+		61CA68271929085500E689BB /* XYZBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYZBox.m; sourceTree = "<group>"; };
+		61CA68291929089F00E689BB /* XYZBoxTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYZBoxTestCase.m; sourceTree = "<group>"; };
+		61CA682B19290C2B00E689BB /* XYZMainViewControllerTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYZMainViewControllerTestCase.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,9 +96,11 @@
 		616C12181921426B002FF104 = {
 			isa = PBXGroup;
 			children = (
+				61CA68251929083900E689BB /* Box */,
 				616C125319214379002FF104 /* XYZMainViewController.h */,
 				616C126019214B17002FF104 /* Main.storyboard */,
 				616C125419214379002FF104 /* XYZMainViewController.m */,
+				61CA682B19290C2B00E689BB /* XYZMainViewControllerTestCase.m */,
 				616C122A1921426B002FF104 /* BLESensor */,
 				616C12431921426B002FF104 /* BLESensorTests */,
 				616C12231921426B002FF104 /* Frameworks */,
@@ -169,6 +178,16 @@
 				616C125E19214A13002FF104 /* BLEDefines.h */,
 			);
 			path = BLE;
+			sourceTree = "<group>";
+		};
+		61CA68251929083900E689BB /* Box */ = {
+			isa = PBXGroup;
+			children = (
+				61CA68261929085500E689BB /* XYZBox.h */,
+				61CA68271929085500E689BB /* XYZBox.m */,
+				61CA68291929089F00E689BB /* XYZBoxTestCase.m */,
+			);
+			name = Box;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,6 +289,7 @@
 			files = (
 				616C125519214379002FF104 /* XYZMainViewController.m in Sources */,
 				616C12351921426B002FF104 /* XYZAppDelegate.m in Sources */,
+				61CA68281929085500E689BB /* XYZBox.m in Sources */,
 				616C12311921426B002FF104 /* main.m in Sources */,
 				616C125F19214A13002FF104 /* BLE.m in Sources */,
 			);
@@ -279,7 +299,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61CA682C19290C2B00E689BB /* XYZMainViewControllerTestCase.m in Sources */,
 				616C124A1921426B002FF104 /* BLESensorTests.m in Sources */,
+				61CA682A1929089F00E689BB /* XYZBoxTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
