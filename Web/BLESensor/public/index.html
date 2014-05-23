@@ -77,7 +77,7 @@
       });
 
       socket.on('dataReceived', function(data) {
-
+console.log(data);
         if (data.calibrate) {
           yawOffset = yaw;
         }

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CMMotionManager.h>
 #import "BLE.h"
+#import "XYZFuncQueue.h"
 
 @interface XYZMainViewController : UIViewController <BLEDelegate>
 {
@@ -23,6 +24,15 @@
     IBOutlet UISwitch *switchAccelX;
     IBOutlet UISwitch *switchAccelY;
     IBOutlet UISwitch *switchAccelZ;
+    IBOutlet UILabel *labelRoll;
+    IBOutlet UILabel *labelPitch;
+    IBOutlet UILabel *labelYaw;
+    IBOutlet UILabel *labelGravityX;
+    IBOutlet UILabel *labelGravityY;
+    IBOutlet UILabel *labelGravityZ;
+    IBOutlet UILabel *labelAccelX;
+    IBOutlet UILabel *labelAccelY;
+    IBOutlet UILabel *labelAccelZ;
     IBOutlet UIActivityIndicatorView *indConnecting;
     IBOutlet UILabel *lblRSSI;
 }
@@ -39,6 +49,9 @@
 @property BOOL sendAccelZ;
 @property int packageIndex;
 
-- (NSData *)packageDataAsType:(UInt8)type FromString:(NSString *)str;
+//
+@property (strong, nonatomic) NSMutableArray *records;
+@property (strong, nonatomic) NSMutableArray *q;
+- (void)spliceObj:(XYZFuncQueue *)input IntoQ:(NSMutableArray *)q;
 
 @end
