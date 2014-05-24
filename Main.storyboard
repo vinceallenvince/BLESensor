@@ -44,7 +44,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nre-x5-Xcu">
-                                <rect key="frame" x="20" y="504" width="280" height="30"/>
+                                <rect key="frame" x="119" y="504" width="82" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Calibrate">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -242,10 +242,21 @@
                                 <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LsQ-ue-sE8">
+                                <rect key="frame" x="218" y="504" width="82" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Action">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnAction:" destination="9BO-q4-Qkn" eventType="touchUpInside" id="t7L-Cz-Y9z"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="btnAction" destination="LsQ-ue-sE8" id="ygb-H8-Bcn"/>
                         <outlet property="btnCalibrate" destination="Nre-x5-Xcu" id="8Vb-wW-awq"/>
                         <outlet property="btnConnect" destination="o7N-vd-UJv" id="xdl-a9-3zS"/>
                         <outlet property="indConnecting" destination="EGI-Rm-Mlb" id="ckx-wU-wsg"/>

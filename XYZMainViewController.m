@@ -29,6 +29,7 @@ static const NSTimeInterval deviceMotionMin = 0.01;
     ble.delegate = self;
     
     [btnCalibrate setEnabled:false];
+    [btnAction setEnabled:false];
     
     [self disableSwitches];
 }
@@ -55,6 +56,7 @@ NSTimer *rssiTimer;
     
     [rssiTimer invalidate];
     [btnCalibrate setEnabled:false];
+    [btnAction setEnabled:false];
     [self resetSwitches];
     [self disableSwitches];
 }
@@ -126,7 +128,8 @@ NSTimer *rssiTimer;
     if (ble.peripherals)
         ble.peripherals = nil;
         
-        [btnConnect setEnabled:false];
+    [btnConnect setEnabled:false];
+    [btnAction setEnabled:false];
     [ble findBLEPeripherals:2];
     
     [NSTimer scheduledTimerWithTimeInterval:(float)2.0 target:self selector:@selector(connectionTimer:) userInfo:nil repeats:NO];
@@ -156,6 +159,7 @@ NSTimer *rssiTimer;
     [btnConnect setTitle:@"Disconnect" forState:UIControlStateNormal];
     
     [btnCalibrate setEnabled:true];
+    [btnAction setEnabled:true];
     
     if (ble.peripherals.count > 0)
     {
@@ -170,9 +174,20 @@ NSTimer *rssiTimer;
 
 - (IBAction)btnCalibrate:(id)sender
 {
-    NSLog(@"sending...");
+    NSLog(@"calibrate...");
     
     UInt8 buf[3] = {0x21, 0x24, 0x00};
+    
+    NSData *data = [[NSData alloc] initWithBytes:buf length:3];
+    [ble write:data];
+    
+}
+
+- (IBAction)btnAction:(id)sender
+{
+    NSLog(@"action!");
+    
+    UInt8 buf[3] = {0x21, 0x23, 0x00};
     
     NSData *data = [[NSData alloc] initWithBytes:buf length:3];
     [ble write:data];

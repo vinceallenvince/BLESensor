@@ -52,6 +52,11 @@
       </tr>
     </table>
 
+    <p><a href='simple-action.html'>Simple Action</a></p>
+    <p><a href='simple-gravity.html'>Simple Gravity</a></p>
+    <p><a href='simple-flocking.html'>Simple Flocking</a></p>
+    <p><a href='rotate-attract.html'>Rotate Attract</a></p>
+    <p><a href='rotate-gears.html'>Rotate Gears</a></p>
 
     <script type='text/javascript' src='scripts/supersimplesim.js'></script>
     <script type='text/javascript' src='http://localhost:1337/socket.io/socket.io.js'></script>
@@ -77,8 +82,8 @@
       });
 
       socket.on('dataReceived', function(data) {
-console.log(data);
-        if (data.calibrate) {
+
+        if (data.action) {
           yawOffset = yaw;
         }
 

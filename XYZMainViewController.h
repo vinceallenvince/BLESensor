@@ -15,6 +15,7 @@
 {
     IBOutlet UIButton *btnConnect;
     IBOutlet UIButton *btnCalibrate;
+    IBOutlet UIButton *btnAction;
     IBOutlet UISwitch *switchRoll;
     IBOutlet UISwitch *switchPitch;
     IBOutlet UISwitch *switchYaw;

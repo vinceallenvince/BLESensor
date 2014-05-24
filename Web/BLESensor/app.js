@@ -48,6 +48,7 @@ function connectSerial(data) {
     var mode = 0;
     var index = null;
     var calibrate = false;
+    var action = false;
 
     sp.on('data', function(data) {
 
@@ -123,10 +124,12 @@ function connectSerial(data) {
           //console.log(vals);
           emitter.emit('dataReceived', {
           	calibrate: calibrate,
+            action: action,
             val: vals
           });
           // reset vals
           calibrate = false;
+          action = false;
           roll = '';
           pitch = '';
           yaw = '';
@@ -146,6 +149,8 @@ function connectSerial(data) {
             continue;
           } else if (chr === '$') { // calibrate
           	calibrate = true;
+          } else if (chr === '#') { // action
+            action = true;
           }
           switch(index) {
             case 'A':
