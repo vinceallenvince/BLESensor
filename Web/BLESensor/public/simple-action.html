@@ -1,0 +1,74 @@
+<html>
+  <title>FloraJS | BLE Sensor</title>
+  <head>
+    <link rel="stylesheet" href="css/burner.min.css" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="css/flora.min.css" type="text/css" charset="utf-8" />
+    <script src="scripts/burner.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="scripts/flora.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <script type='text/javascript' src='http://localhost:1337/socket.io/socket.io.js'></script>
+    <script type='text/javascript'>
+
+
+      var rand = Flora.Utils.getRandomNumber;
+      var map = Flora.Utils.map;
+
+      // start the system; pass initial instructions
+      Burner.System.init();
+
+      var world = Burner.System.firstWorld();
+      world.gravity.x = 0;
+      world.gravity.y = 0;
+      world.c = 0;
+
+      var center = new Burner.Vector(world.width / 2, world.height / 2);
+
+      var agent = Burner.System.add('Agent', {
+        wrapWorldEdges: true,
+        maxSpeed: 5
+      });
+
+
+      //
+
+      var yaw = 0, yawOffset = 0;
+
+      var socket = io.connect('http://localhost:1337');
+
+      socket.on('connected', function() {
+        console.log('connected!');
+      });
+
+      socket.on('dataReceived', function(data) {
+
+        var accelMult = 0.5;
+
+        if (data.calibrate) {
+          yawOffset = yaw - 2.349;
+        }
+
+        if (data.action) {
+          Burner.System.add('ParticleSystem', {
+            lifespan: 10,
+            location: new Burner.Vector(agent.location.x, agent.location.y)
+          });
+        }
+
+        if (data.val) {
+          if (data.val.attitude.yaw) {
+            yaw = data.val.attitude.yaw;
+            var accel = new Burner.Vector(1, 1);
+            accel.normalize();
+            accel.rotate(-(yaw - yawOffset));
+            accel.mult(accelMult);
+            agent.acceleration.x = accel.x;
+            agent.acceleration.y = accel.y;
+          }
+        }
+
+
+      });
+    </script>
+  </body>
+</html>

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6157D93E192F8D96000A0C7C /* XYZFuncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 6157D93D192F8D96000A0C7C /* XYZFuncQueue.m */; };
 		616C12251921426B002FF104 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 616C12241921426B002FF104 /* Foundation.framework */; };
 		616C12271921426B002FF104 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 616C12261921426B002FF104 /* CoreGraphics.framework */; };
 		616C12291921426B002FF104 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 616C12281921426B002FF104 /* UIKit.framework */; };
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6157D93C192F8D96000A0C7C /* XYZFuncQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYZFuncQueue.h; sourceTree = "<group>"; };
+		6157D93D192F8D96000A0C7C /* XYZFuncQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYZFuncQueue.m; sourceTree = "<group>"; };
 		616C12211921426B002FF104 /* BLESensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BLESensor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		616C12241921426B002FF104 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		616C12261921426B002FF104 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -100,6 +103,8 @@
 				616C125319214379002FF104 /* XYZMainViewController.h */,
 				616C126019214B17002FF104 /* Main.storyboard */,
 				616C125419214379002FF104 /* XYZMainViewController.m */,
+				6157D93C192F8D96000A0C7C /* XYZFuncQueue.h */,
+				6157D93D192F8D96000A0C7C /* XYZFuncQueue.m */,
 				61CA682B19290C2B00E689BB /* XYZMainViewControllerTestCase.m */,
 				616C122A1921426B002FF104 /* BLESensor */,
 				616C12431921426B002FF104 /* BLESensorTests */,
@@ -288,6 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				616C125519214379002FF104 /* XYZMainViewController.m in Sources */,
+				6157D93E192F8D96000A0C7C /* XYZFuncQueue.m in Sources */,
 				616C12351921426B002FF104 /* XYZAppDelegate.m in Sources */,
 				61CA68281929085500E689BB /* XYZBox.m in Sources */,
 				616C12311921426B002FF104 /* main.m in Sources */,

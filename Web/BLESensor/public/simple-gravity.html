@@ -36,7 +36,7 @@
       var maxScale = 40;
       var minMass = 1;
       var maxMass = 2;
-      var maxAgents = 120;
+      var maxAgents = 70;
 
       for (var i = 0; i < maxAgents; i++) {
         var loc = new Burner.Vector(1, 1);
@@ -64,11 +64,6 @@
       });
 
       socket.on('dataReceived', function(data) {
-
-        if (data.calibrate) {
-          yawOffset = yaw;
-        }
-
         if (data.val) {
           if (data.val.gravity.x) {
             world.gravity.x = Flora.Utils.map(data.val.gravity.x, -1, 1, -1, 1);
