@@ -10,9 +10,19 @@
     <script type='text/javascript' src='http://localhost:1337/socket.io/socket.io.js'></script>
     <script type='text/javascript'>
 
-
+      var myAgent;
       var rand = Flora.Utils.getRandomNumber;
       var map = Flora.Utils.map;
+
+      function createMotor(id, c) {
+        var color = c || [255, 255, 255];
+        var motor = document.createElement('div');
+        motor.id = 'motor' + id;
+        motor.className = 'motor';
+        motor.style.cssText = 'position: absolute; top: 11px; left: 6px; width: 14px; height: 2px; background: #666; opacity: 1;';
+        motor.style.backgroundColor = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+        return motor;
+      }
 
       // start the system; pass initial instructions
       Burner.System.init();
@@ -24,11 +34,77 @@
 
       var center = new Burner.Vector(world.width / 2, world.height / 2);
 
-      var agent = Burner.System.add('Agent', {
+      myAgent = Burner.System.add('Agent', {
+        angle: rand(0, 360),
+        motorSpeed: 2,
+        minSpeed: 1,
+        maxSpeed: 4,
+        width: 30,
+        height: 30,
+        location: new Burner.Vector(world.width / 2, world.height / 2),
+        color: [255, 255, 255],
+        borderColor: [255, 100, 0],
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderRadius: 0,
+        controlCamera: false,
         wrapWorldEdges: true,
-        maxSpeed: 5
+        motorRotation: 0,
+        zIndex: 100,
+        beforeStep: function() {
+          var motor = document.getElementById('motor' + this.id),
+          a = this.motorRotation;
+
+          if (motor) {
+            motor.style.webkitTransform = 'rotate(' + a + 'deg)';
+            this.motorRotation += Flora.Utils.map(this.velocity.mag(),
+                this.minSpeed, this.maxSpeed, 10, 20);
+          }
+        }
       });
 
+      myAgent.el.appendChild(createMotor(myAgent.id, [100, 100, 100]));
+
+      Burner.System.add('Agent', {
+        width: 1,
+        height: 100,
+        parent: myAgent,
+        pointToDirection: false,
+        isStatic: true,
+        wrapWorldEdges: true,
+        offsetDistance: 0,
+        zIndex: 1,
+        beforeStep: function() {
+          this.angle = this.parent.angle;
+        }
+      });
+
+      for (var i = 0; i < 20; i++) {
+
+        Burner.System.add('Agent', {
+          seekTarget: myAgent,
+          flocking: true,
+          mass: i * 10,
+          width: 2 + i,
+          height: 2 + i,
+          color: [200, 255, 255],
+          borderRadius: 100,
+          separateStrength: 10
+        });
+
+        Burner.System.add('Agent', {
+          width: 1,
+          height: 30 + (i * 2),
+          parent: Burner.System._records.list[Burner.System._records.list.length - 1],
+          pointToDirection: false,
+          isStatic: true,
+          wrapWorldEdges: true,
+          offsetDistance: 0,
+          beforeStep: function() {
+            this.angle = this.parent.angle;
+          }
+        });
+      }
 
       //
 
@@ -51,7 +127,7 @@
         if (data.action) {
           Burner.System.add('ParticleSystem', {
             lifespan: 10,
-            location: new Burner.Vector(agent.location.x, agent.location.y)
+            location: new Burner.Vector(myAgent.location.x, myAgent.location.y)
           });
         }
 
@@ -62,8 +138,8 @@
             accel.normalize();
             accel.rotate(-(yaw - yawOffset));
             accel.mult(accelMult);
-            agent.acceleration.x = accel.x;
-            agent.acceleration.y = accel.y;
+            myAgent.acceleration.x = accel.x;
+            myAgent.acceleration.y = accel.y;
           }
         }
 

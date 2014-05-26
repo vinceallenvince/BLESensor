@@ -1,4 +1,4 @@
-/*! Flora v2.2.1 - 2013-12-31 05:12:18 
+/*! Flora v2.2.6 - 2014-05-24 05:05:58 
  *  Vince Allen 
  *  Brooklyn, NY 
  *  vince@vinceallen.com 
@@ -2090,8 +2090,8 @@ Utils.extend(Sensor, Mover);
  *
  * @param {Object} [opt_options=] A map of initial properties.
  * @param {string} [opt_options.type = ''] The type of stimulator that can activate this sensor. eg. 'cold', 'heat', 'light', 'oxygen', 'food', 'predator'
- * @param {string} [opt_options.behavior = 'LOVE'] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
- * @param {number} [opt_options.sensitivity = 2] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
+ * @param {string} [opt_options.behavior = ''] The vehicle carrying the sensor will invoke this behavior when the sensor is activated.
+ * @param {number} [opt_options.sensitivity = 200] The higher the sensitivity, the farther away the sensor will activate when approaching a stimulus.
  * @param {number} [opt_options.width = 5] Width.
  * @param {number} [opt_options.height = 5] Height.
  * @param {number} [opt_options.offsetDistance = 30] The distance from the center of the sensor's parent.
@@ -2105,6 +2105,7 @@ Utils.extend(Sensor, Mover);
  * @param {string} [opt_options.borderStyle = 'solid'] Border style.
  * @param {Array} [opt_options.borderColor = 255, 255, 255] Border color.
  * @param {Function} [opt_options.onConsume] If sensor.behavior == 'CONSUME', sensor calls this function when consumption is complete.
+ * @param {Function} [opt_options.onDestroy] If sensor.behavior == 'DESTROY', sensor calls this function when destroyed.
  */
 Sensor.prototype.init = function(opt_options) {
 
@@ -2133,7 +2134,7 @@ Sensor.prototype.init = function(opt_options) {
 
   this.displayRange = !!options.displayRange;
   if (this.displayRange) {
-    this.createRangeDisplay();
+    this.rangeDisplay = this.createRangeDisplay();
   }
 
   this.displayConnector = !!options.displayConnector;
@@ -2258,12 +2259,17 @@ Sensor.prototype.getBehavior = function() {
          if (Flora.Utils.isInside(sensor.parent, target)) {
 
             Burner.System.add('ParticleSystem', {
+              location: new Burner.Vector(target.location.x, target.location.y),
               lifespan: 20,
               borderColor: target.borderColor,
               startColor: target.color,
               endColor: target.color
             });
             Burner.System.destroyItem(target);
+
+            if (sensor.onDestroy) {
+              sensor.onDestroy.call(this, sensor, target);
+            }
          }
       };
 
@@ -2296,7 +2302,7 @@ Sensor.prototype.getBehavior = function() {
         var desiredVelocity = Burner.Vector.VectorSub(target.location, this.location);
 
         // reverse the force
-        desiredVelocity.mult(-1);
+        desiredVelocity.mult(-0.0075);
 
         // limit to the maxSteeringForce
         desiredVelocity.limit(this.maxSteeringForce);
@@ -2463,18 +2469,11 @@ Sensor.prototype.getBehavior = function() {
           desiredVelocity.mult(m);
 
           var steer = Burner.Vector.VectorSub(desiredVelocity, this.velocity);
-          steer.limit(this.maxSteeringForce);
+          steer.limit(this.maxSteeringForce * 0.25);
           return steer;
-
         }
 
         this.angle = Flora.Utils.radiansToDegrees(Math.atan2(desiredVelocity.y, desiredVelocity.x));
-
-        this.velocity.x = 0;
-        this.velocity.y = 0;
-        this.acceleration.x = 0;
-        this.acceleration.y = 0;
-
       };
 
     case 'ACCELERATE':

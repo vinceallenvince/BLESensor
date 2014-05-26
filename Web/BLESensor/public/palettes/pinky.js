@@ -37,6 +37,11 @@ palette.addColor({
   max: 24,
   startColor: [255,255,255],
   endColor: [255,255,255]
+}).addColor({
+  min: 12,
+  max: 24,
+  startColor: [156,215,222],
+  endColor: [136,195,202]
 });
 
 exports.pinky = palette;
