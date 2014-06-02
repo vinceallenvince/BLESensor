@@ -13,4 +13,4 @@ You can also find [cutting plans](https://github.com/vinceallenvince/BLESensor/t
 
 ![BLESensor](http://raw.githubusercontent.com/vinceallenvince/BLESensor/master/images/bluetooth-accel.jpg)
 
-Check out [the video](http//www.youtube.com/embed/Tu3zn0sqZpQ).
+Check out [the video](http://youtu.be/Tu3zn0sqZpQ).
