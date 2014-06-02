@@ -12,3 +12,5 @@ The iOS app connects to a [Red Bear Labs Bluetooth Low Energy shield](http://red
 You can also find [cutting plans](https://github.com/vinceallenvince/BLESensor/tree/master/enclosure) to laser cut the enclosure.
 
 ![BLESensor](http://raw.githubusercontent.com/vinceallenvince/BLESensor/master/images/bluetooth-accel.jpg)
+
+<iframe width="640" height="480" src="//www.youtube.com/embed/Tu3zn0sqZpQ" frameborder="0" allowfullscreen></iframe>
